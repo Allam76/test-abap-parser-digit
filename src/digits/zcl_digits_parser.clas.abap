@@ -138,7 +138,7 @@ class zcl_digits_parser implementation.
             if elements0 is initial.
                 address0 = failure_node.
             else.
-                address0 = new zcl_digits_root(
+                address0 = new zcl_digits_root_tree_node(
                     text = substring( val = input off = index1 len = offset - index1 )
                     offset = index1
                     elements = elements0 ).
