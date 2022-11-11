@@ -2,8 +2,8 @@
 ** See https://github.com/Allam766/canopy-abap/ for documentation
 
 
-CLASS zcl_digits_tree_node DEFINITION PUBLIC.
-    PUBLIC SECTION.
+class zcl_digits_tree_node definition public.
+    public section.
         types elements_list_tab type table of ref to  with default key.
         types: begin of label_hash_entry,
            key type ref to lcl_label,
@@ -19,9 +19,9 @@ CLASS zcl_digits_tree_node DEFINITION PUBLIC.
         methods constructor importing text type string offset type i elements type elements_list_tab.
         methods get importing key type ref to lcl_label returning value(result) type ref to .
 
-ENDCLASS.
+endclass.
 
-CLASS zcl_digits_tree_node IMPLEMENTATION.
+class zcl_digits_tree_node implementation.
     method constructor.
         me->text = text;
         me->offset = offset;
@@ -31,5 +31,5 @@ CLASS zcl_digits_tree_node IMPLEMENTATION.
     method get.
         result = me->labelled[ key = key ].
     endmethod.
-ENDCLASS.
+endclass.
 
