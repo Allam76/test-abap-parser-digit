@@ -5,7 +5,6 @@
 * generated do not change
 
 class zcl_digits_grammar definition public
-    inheriting from zcl_digits_parser
     create public.
   public section.
     types string_string_tab type table of stringtab with empty key.

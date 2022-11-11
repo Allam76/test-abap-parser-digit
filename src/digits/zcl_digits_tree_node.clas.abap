@@ -2,7 +2,7 @@
 ** See https://github.com/Allam766/canopy-abap/ for documentation
 
 
-CLASS digits_tree_node DEFINITION PUBLIC.
+CLASS zcl_digits_tree_node DEFINITION PUBLIC.
     PUBLIC SECTION.
         types elements_list_tab type table of ref to  with default key.
         types: begin of label_hash_entry,
@@ -21,7 +21,7 @@ CLASS digits_tree_node DEFINITION PUBLIC.
 
 ENDCLASS.
 
-CLASS digits_tree_node IMPLEMENTATION.
+CLASS zcl_digits_tree_node IMPLEMENTATION.
     method constructor.
         me->text = text;
         me->offset = offset;
