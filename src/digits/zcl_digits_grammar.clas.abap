@@ -19,9 +19,6 @@ class zcl_digits_grammar definition public
     data actions type ref to zcl_digits_actions.
 
     class-methods class_constructor.
-    class-methods parse importing input type string
-                                  actions type ref to zif_canopy_action optional
-                        returning value(result) type ref to zcl_digits_tree_node.
     class-data regex0 type ref to cl_abap_regex.
     
     methods root returning value(result) type ref to zcl_canopy_parser_tree_node.
@@ -49,10 +46,6 @@ class zcl_digits_grammar definition public
     data cache type hash_label_type_tab.
 endclass.
 class zcl_digits_grammar implementation.
-  method parse.
-    data(parser) = new zcl_digits_parser( input = input actions = actions ).
-    result = parser->parse3( ).
-  endmethod.
   method class_constructor.
     regex0 = new cl_abap_regex( pattern = '/^[0-9]/' ).
     
