@@ -30,7 +30,7 @@ class zcl_digits_parser definition public
     methods constructor importing input type string actions type ref to zcl_digits_actions.
     methods format_error importing input type string
                                 offset type i
-                                expected type zcl_digits_grammar=>string_string_tab
+                                expected type string_string_tab
                         returning value(result) type string.
     private section.
         types: begin of ty_rule_type,
@@ -52,7 +52,7 @@ class zcl_digits_parser definition public
                 hash_label_type_tab type table of ty_hash_label_type with empty key.
                 
         data cache type hash_label_type_tab.
-                                    
+
         class-data regex0 type ref to cl_abap_regex.
         
         methods read_root returning value(result) type ref to zcl_digits_tree_node.
