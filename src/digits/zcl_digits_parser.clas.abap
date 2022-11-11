@@ -8,7 +8,7 @@ class zcl_digits_parser definition public
   public section.
     class-methods class_constructor.
     class-methods parse importing input type string
-                                  actions type ref to zif_canopy_action optional
+                                  actions type ref to zcl_digits_actions optional
                         returning value(result) type ref to zcl_digits_tree_node.
     methods parse2 importing input type string
                    returning value(result) type ref to zcl_digits_tree_node
@@ -18,8 +18,8 @@ class zcl_digits_parser definition public
 
     class-data regex0 type ref to cl_abap_regex.
     
-    methods root returning value(result) type ref to zcl_canopy_parser_tree_node.
-    methods digits returning value(result) type ref to zcl_canopy_parser_tree_node.
+    methods read_root returning value(result) type ref to zcl_digits_tree_node.
+    methods read_digits returning value(result) type ref to zcl_digits_tree_node.
     
 endclass.
 
@@ -29,7 +29,7 @@ class zcl_digits_parser implementation.
         
     endmethod.
     
-    method _read_root.
+    method read_root.
         data(address0) = failure_node.
         data(index0) = offset.
         append value #( key = 'root' value = value #( ) ) to cache.
@@ -74,7 +74,7 @@ class zcl_digits_parser implementation.
         result = address0.
     endmethod.
     
-    method _read_digits.
+    method read_digits.
         data(address0) = failure_node.
         data(index0) = offset.
         append value #( key = 'digits' value = value #( ) ) to cache.

@@ -18,7 +18,7 @@ class zcl_digits_grammar definition public
     data expected type string_string_tab.
     data actions type ref to zcl_digits_actions.
 
-    methods constructor importing input type string actions type ref to zcldigits_actions.
+    methods constructor importing input type string actions type ref to zcl_digits_actions.
     methods format_error importing input type string
                                    offset type i
                                    expected type zcl_digits_grammar=>string_string_tab
