@@ -20,7 +20,7 @@ class zcl_digits_tree_node definition public
     methods constructor importing text type string
                                   offset type i
                                   elements type tree_node_list_tab
-                                  labels type stringtab.
+                                  labels type stringtab optional.
     methods get importing key type string returning value(result) type ref to zcl_digits_tree_node.
 endclass.
 
