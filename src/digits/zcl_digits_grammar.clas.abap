@@ -16,7 +16,7 @@ class zcl_digits_grammar definition public
 
     data input type string.
     data expected type string_string_tab.
-    data actions type ref to zif_digits_action.
+    data actions type ref to zcl_digits_action.
 
     class-methods class_constructor.
     class-methods parse.
