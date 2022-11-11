@@ -119,7 +119,7 @@ class zcl_digits_parser implementation.
             offset = rule[ key = offset ]-value->tail.
         else.
             data(index1) = offset.
-            data elements0 type zcl_canopy_parser_tree_node=>tree_node_list_tab.
+            data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
             clear elements0.
             data(address1) = failure_node.
             if address1 <> failure_node.
