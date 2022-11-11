@@ -12,9 +12,9 @@ class zcl_digits_parser definition public
                         returning value(result) type ref to zcl_digits_tree_node.
     methods parse2 importing input type string
                    returning value(result) type ref to zcl_digits_tree_node
-                   raising zcx_digits_error.
+                   raising zcx_digits_parser_error.
     methods parse3 returning value(result) type ref to zcl_digits_tree_node
-                   raising zcx_digits_error.
+                   raising zcx_digits_parser_error.
     methods format_error importing input type string
                                    offset type i
                                    expected type zcl_digits_grammar=>string_string_tab
@@ -81,7 +81,7 @@ class zcl_digits_parser implementation.
       failure = offset.
       append value stringtab( ( `digits` ) ( `<EOF>` ) ) to expected.
     endif.
-    raise exception type zcx_digits_error
+    raise exception type zcx_digits_parser_error
         exporting message = format_error( input = input offset = failure expected = expected ).
   endmethod.
 
