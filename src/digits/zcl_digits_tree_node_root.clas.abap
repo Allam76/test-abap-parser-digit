@@ -5,8 +5,18 @@ class zcl_digits_tree_node_root definition public
   inheriting from zcl_digits_tree_node
   create public.
     public section.
+        methods constructor redefinition.
+            data first type ref to zcl_digits_tree_node.
+            data second type ref to zcl_digits_tree_node.
     
 endclass.
 
 class zcl_digits_tree_node_root implementation.
+    method constructor.
+        super->constructor( text = text  offset = offset  elements = elements ).
+        append value #( key = 'first' value = elements[ 1 ] ) to labelled.
+        first = elements[ 1 ].
+        append value #( key = 'second' value = elements[ 2 ] ) to labelled.
+        second = elements[ 2 ].
+    endmethod.
 endclass.

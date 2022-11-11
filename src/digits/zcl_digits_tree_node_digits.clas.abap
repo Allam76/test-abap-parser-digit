@@ -5,8 +5,12 @@ class zcl_digits_tree_node_digits definition public
   inheriting from zcl_digits_tree_node
   create public.
     public section.
+        methods constructor redefinition.
     
 endclass.
 
 class zcl_digits_tree_node_digits implementation.
+    method constructor.
+        super->constructor( text = text  offset = offset  elements = elements ).
+    endmethod.
 endclass.
