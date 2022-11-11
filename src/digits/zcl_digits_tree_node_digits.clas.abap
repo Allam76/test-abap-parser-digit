@@ -16,4 +16,5 @@ class zcl_digits_tree_node_digits implementation.
     method constructor.
         super->constructor( text = text  offset = offset  elements = elements ).
     endmethod.
+
 endclass.

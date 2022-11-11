@@ -11,6 +11,11 @@ class zcl_digits_tree_node_root definition public
                                     labels type stringtab optional.
         data first type ref to zcl_digits_tree_node.
         data second type ref to zcl_digits_tree_node.
+        class-methods action importing text type string
+                                       offset type i
+                                       elements type tree_node_list_tab
+                                       labels type stringtab optional
+                              returning value(result) type ref to zcl__tree_node.
     
 endclass.
 
@@ -21,5 +26,9 @@ class zcl_digits_tree_node_root implementation.
         first = elements[ 1 ].
         append value #( key = 'second' value = elements[ 2 ] ) to labelled.
         second = elements[ 2 ].
+    endmethod.
+
+    method action.
+        result = first && second.
     endmethod.
 endclass.
