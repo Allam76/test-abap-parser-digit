@@ -105,7 +105,7 @@ class zcl_digits_parser implementation.
   endmethod.
 
   method parse3.
-    data(tree) = _read_root( ).
+    data(tree) = read_root( ).
     if tree <> failure_node and offset = input_size.
       result = tree.
       return.
