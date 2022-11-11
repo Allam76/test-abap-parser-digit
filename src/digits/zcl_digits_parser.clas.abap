@@ -129,11 +129,11 @@ class zcl_digits_parser implementation.
                 chunk0 = substring( val = input off = offset len = max0 - offset ).
             endif.
             if chunk0 is not initial and chunk0 = `first`.
-                offset = new zcl_digits_tree_node(
-                    text = substring( val = input off = offset + 5 len = null - offset + 5 )
-                    offset = offset + 5
+                address1 = new zcl_digits_tree_node(
+                    text = substring( val = input off = offset len = offset + 5 - offset )
+                    offset = offset
                     elements = value #( ) ).
-                offset = null.
+                offset = offset + 5.
             else.
                 address1 = failure_node.
                 if offset > failure.
@@ -153,11 +153,11 @@ class zcl_digits_parser implementation.
                     chunk1 = substring( val = input off = offset len = max1 - offset ).
                 endif.
                 if chunk1 is not initial and chunk1 = `second`.
-                    offset = new zcl_digits_tree_node(
-                        text = substring( val = input off = offset + 6 len = null - offset + 6 )
-                        offset = offset + 6
+                    address2 = new zcl_digits_tree_node(
+                        text = substring( val = input off = offset len = offset + 6 - offset )
+                        offset = offset
                         elements = value #( ) ).
-                    offset = null.
+                    offset = offset + 6.
                 else.
                     address2 = failure_node.
                     if offset > failure.
