@@ -15,7 +15,7 @@ class zcl_digits_tree_node_root definition public
                                        offset type i
                                        elements type tree_node_list_tab
                                        labels type stringtab optional
-                              returning value(result) type ref to zcl__tree_node.
+                              returning value(result) type ref to zcl_digits_tree_node.
     
 endclass.
 
