@@ -124,16 +124,16 @@ class zcl_digits_parser implementation.
             data(address1) = failure_node.
             data chunk0 type string.
             clear chunk0.
-            data(max0) = offset + 5.
+            data(max0) = offset + 3.
             if max0 <= input_size.
                 chunk0 = substring( val = input off = offset len = max0 - offset ).
             endif.
-            if chunk0 is not initial and chunk0 = `first`.
+            if chunk0 is not initial and chunk0 = `foo`.
                 address1 = new zcl_digits_tree_node(
-                    text = substring( val = input off = offset len = offset + 5 - offset )
+                    text = substring( val = input off = offset len = offset + 3 - offset )
                     offset = offset
                     elements = value #( ) ).
-                offset = offset + 5.
+                offset = offset + 3.
             else.
                 address1 = failure_node.
                 if offset > failure.
@@ -148,16 +148,16 @@ class zcl_digits_parser implementation.
                 data(address2) = failure_node.
                 data chunk1 type string.
                 clear chunk1.
-                data(max1) = offset + 6.
+                data(max1) = offset + 3.
                 if max1 <= input_size.
                     chunk1 = substring( val = input off = offset len = max1 - offset ).
                 endif.
-                if chunk1 is not initial and chunk1 = `second`.
+                if chunk1 is not initial and chunk1 = `bar`.
                     address2 = new zcl_digits_tree_node(
-                        text = substring( val = input off = offset len = offset + 6 - offset )
+                        text = substring( val = input off = offset len = offset + 3 - offset )
                         offset = offset
                         elements = value #( ) ).
-                    offset = offset + 6.
+                    offset = offset + 3.
                 else.
                     address2 = failure_node.
                     if offset > failure.
