@@ -119,7 +119,7 @@ class zcl_digits_parser implementation.
             offset = rule[ key = offset ]-value->tail.
         else.
             data(index1) = offset.
-            data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
+            data elements0 type zcl_tree_node_digits=>tree_node_list_tab.
             clear elements0.
             data(address1) = failure_node.
             if address1 <> failure_node.
@@ -138,7 +138,7 @@ class zcl_digits_parser implementation.
             if elements0 is initial.
                 address0 = failure_node.
             else.
-                address0 = new zcl_digits_root_tree_node(
+                address0 = new zcl_digits_tree_node_root(
                     text = substring( val = input off = index1 len = offset - index1 )
                     offset = index1
                     elements = elements0 ).
