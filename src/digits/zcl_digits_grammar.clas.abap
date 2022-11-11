@@ -16,7 +16,7 @@ class zcl_digits_grammar definition public
 
     data input type string.
     data expected type string_string_tab.
-    data actions type ref to zcl_digits_action.
+    data actions type ref to zcl_digits_actions.
 
     class-methods class_constructor.
     class-methods parse.
@@ -48,7 +48,7 @@ class zcl_digits_grammar definition public
 endclass.
 class zcl_digits_grammar implementation.
   method parse.
-    data(parser) = new zcl_digits_grammar( input = input actions = actions ).
+    data(parser) = new zcl_digits_parser( input = input actions = actions ).
     result = parser->parse3( ).
   endmethod.
   method class_constructor.

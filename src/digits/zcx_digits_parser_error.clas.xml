@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCX_DIGITS_PARSER</CLSNAME>
+    <CLSNAME>ZCX_DIGITS_PARSER_ERROR</CLSNAME>
     <LANGU>E</LANGU>
     <DESCRIPT>Parser for grammar DIGITS</DESCRIPT>
     <STATE>1</STATE>
