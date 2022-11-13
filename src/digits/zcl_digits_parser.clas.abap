@@ -208,6 +208,48 @@ class zcl_digits_parser implementation.
             address0 = rule[ key = offset ]-value->node.
             offset = rule[ key = offset ]-value->tail.
         else.
+            data(index1) = offset.
+            data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
+            clear elements0.
+            data address1 type ref to zcl_tree_node_digits.
+            clear address1.
+            do.
+                data chunk0 type string.
+                clear chunk0.
+                data(max0) = offset + 1.
+                if max0 <= input_size.
+                    chunk0 = substring( val = input off = offset len = max0 - offset ).
+                endif.
+                if chunk0 is not initial and regex0->create_matcher( text = chunk0 )->match( ) = abap_true.
+                    offset = new zcl_digits_tree_node(
+                        text = substring( val = input off = offset + 1 len = null - offset + 1 )
+                        offset = offset + 1
+                        elements = value #( ) ).
+                    offset = null.
+                else.
+                    address1 = failure_node.
+                    if offset > failure.
+                        failure = offset.
+                    endif.
+                    if offset = failure.
+                        append value #( ( `digits::digits` ) ( `regex0` ) ) to expected.
+                    endif.
+                endif.
+                if address1 <> failure_node.
+                    append address1 to elements0.
+                else.
+                    exit.
+                endif.
+            enddo.
+            if lines( elements0 ) >= 0.
+                index1 = new zcl_digits_tree_node(
+                    text = substring( val = input off = offset len = elements0 - offset )
+                    offset = offset
+                    elements = value #( ) ).
+                offset = elements0.
+            else.
+                address0 = failure_node.
+            endif.
             append value #( key = index0 value = new cache_record( node = address0 tail = offset ) ) to rule.
         endif.
         result = address0.
