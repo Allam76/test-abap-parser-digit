@@ -132,11 +132,11 @@ class zcl_digits_parser implementation.
                 chunk0 = substring( val = input off = offset len = max0 - offset ).
             endif.
             if chunk0 is not initial and chunk0 = `foo`.
-                address1 = new zcl_digits_tree_node(
-                    text = substring( val = input off = offset len = offset + 3 - offset )
-                    offset = offset
-                    elements = value #( ) ).
-                offset = offset + 3.
+                [object Object] = new zcl_digits_tree_node(
+                    text = substring( val = input off = address1 len = offset - address1 )
+                    offset = address1
+                    elements = offset + 3 ).
+                offset = offset.
             else.
                 address1 = failure_node.
                 if offset > failure.
@@ -156,11 +156,11 @@ class zcl_digits_parser implementation.
                     chunk1 = substring( val = input off = offset len = max1 - offset ).
                 endif.
                 if chunk1 is not initial and chunk1 = `bar`.
-                    address2 = new zcl_digits_tree_node(
-                        text = substring( val = input off = offset len = offset + 3 - offset )
-                        offset = offset
-                        elements = value #( ) ).
-                    offset = offset + 3.
+                    [object Object] = new zcl_digits_tree_node(
+                        text = substring( val = input off = address2 len = offset - address2 )
+                        offset = address2
+                        elements = offset + 3 ).
+                    offset = offset.
                 else.
                     address2 = failure_node.
                     if offset > failure.
@@ -183,11 +183,11 @@ class zcl_digits_parser implementation.
             if elements0 is initial.
                 address0 = failure_node.
             else.
-                address0 = zcl_digits_tree_node_root=>action(
-                    text = substring( val = input off = index1 len = offset - index1 )
-                    offset = index1
-                    elements = elements0 ).
-                offset = offset.
+                [object Object] = zcl_digits_tree_node_result = first && second.=>action(
+                    text = substring( val = input off = address0 len = index1 - address0 )
+                    offset = address0
+                    elements = offset ).
+                offset = index1.
             endif.
             append value #( key = index0 value = new cache_record( node = address0 tail = offset ) ) to rule.
         endif.
@@ -221,11 +221,11 @@ class zcl_digits_parser implementation.
                     chunk0 = substring( val = input off = offset len = max0 - offset ).
                 endif.
                 if chunk0 is not initial and regex0->create_matcher( text = chunk0 )->match( ) = abap_true.
-                    offset = new zcl_digits_tree_node(
-                        text = substring( val = input off = offset + 1 len = null - offset + 1 )
-                        offset = offset + 1
+                    address1 = new zcl_digits_tree_node(
+                        text = substring( val = input off = offset len = offset + 1 - offset )
+                        offset = offset
                         elements = value #( ) ).
-                    offset = null.
+                    offset = offset + 1.
                 else.
                     address1 = failure_node.
                     if offset > failure.
@@ -242,11 +242,11 @@ class zcl_digits_parser implementation.
                 endif.
             enddo.
             if lines( elements0 ) >= 0.
-                index1 = new zcl_digits_tree_node(
-                    text = substring( val = input off = offset len = elements0 - offset )
-                    offset = offset
-                    elements = value #( ) ).
-                offset = elements0.
+                address0 = new zcl_digits_tree_node(
+                    text = substring( val = input off = index1 len = offset - index1 )
+                    offset = index1
+                    elements = elements0 ).
+                offset = offset.
             else.
                 address0 = failure_node.
             endif.
