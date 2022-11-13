@@ -211,7 +211,7 @@ class zcl_digits_parser implementation.
             data(index1) = offset.
             data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
             clear elements0.
-            data address1 type ref to zcl_tree_node_digits.
+            data address1 type ref to zcl_digits_tree_node.
             clear address1.
             do.
                 data chunk0 type string.
