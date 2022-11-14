@@ -26,6 +26,7 @@ class zcl_digits_tree_node_root implementation.
         first = elements[ 1 ].
         append value #( key = 'second' value = elements[ 2 ] ) to labelled.
         second = elements[ 2 ].
+        me->root = root.
     endmethod.
 
     method action.

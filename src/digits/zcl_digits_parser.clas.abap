@@ -1,283 +1,282 @@
 ** This file was generated from
 ** See https://github.com/Allam766/canopy-abap/ for documentation
 
-class zcl_digits_parser definition public
-    create public.
+CLASS zcl_digits_parser DEFINITION PUBLIC
+    CREATE PUBLIC.
 
-  public section.
-    types string_string_tab type table of stringtab with empty key.
+  PUBLIC SECTION.
+    TYPES string_string_tab TYPE TABLE OF stringtab WITH EMPTY KEY.
 
-    class-data failure_node type ref to zcl_digits_tree_node.
-    data input_size type i.
-    data offset type i.
-    data failure type i.
+    CLASS-DATA failure_node TYPE REF TO zcl_digits_tree_node.
+    DATA input_size TYPE i.
+    DATA offset TYPE i.
+    DATA failure TYPE i.
 
-    data input type string.
-    data expected type string_string_tab.
-    data actions type ref to zcl_digits_actions.
+    DATA input TYPE string.
+    DATA expected TYPE string_string_tab.
+    DATA actions TYPE REF TO zcl_digits_actions.
 
+    CLASS-METHODS class_constructor.
+    CLASS-METHODS parse IMPORTING input TYPE string
+                                  actions TYPE REF TO zcl_digits_actions OPTIONAL
+                        RETURNING VALUE(result) TYPE REF TO zcl_digits_tree_node.
+    METHODS parse2 IMPORTING input TYPE string
+                   RETURNING VALUE(result) TYPE REF TO zcl_digits_tree_node
+                   RAISING zcx_digits_parser_error.
+    METHODS parse3 RETURNING VALUE(result) TYPE REF TO zcl_digits_tree_node
+                   RAISING zcx_digits_parser_error.
 
-    class-methods class_constructor.
-    class-methods parse importing input type string
-                                  actions type ref to zcl_digits_actions optional
-                        returning value(result) type ref to zcl_digits_tree_node.
-    methods parse2 importing input type string
-                   returning value(result) type ref to zcl_digits_tree_node
-                   raising zcx_digits_parser_error.
-    methods parse3 returning value(result) type ref to zcl_digits_tree_node
-                   raising zcx_digits_parser_error.
+    METHODS constructor IMPORTING input TYPE string actions TYPE REF TO zcl_digits_actions.
+    METHODS format_error IMPORTING input TYPE string
+                                offset TYPE i
+                                expected TYPE string_string_tab
+                        RETURNING VALUE(result) TYPE string.
+  PRIVATE SECTION.
+    TYPES: BEGIN OF ty_rule_type,
+                    key TYPE i,
+                    value TYPE REF TO cache_record,
+                END OF ty_rule_type,
+                ty_rule_type_tab TYPE TABLE OF ty_rule_type WITH EMPTY KEY.
 
-    methods constructor importing input type string actions type ref to zcl_digits_actions.
-    methods format_error importing input type string
-                                offset type i
-                                expected type string_string_tab
-                        returning value(result) type string.
-    private section.
-        types: begin of ty_rule_type,
-                    key type i,
-                    value type ref to cache_record,
-                end of ty_rule_type,
-                ty_rule_type_tab type table of ty_rule_type with empty key.
+    TYPES: BEGIN OF ty_hash_int_type,
+                    key TYPE i,
+                    value TYPE REF TO cache_record,
+                END OF ty_hash_int_type,
+                ty_hash_int_type_tab TYPE TABLE OF ty_hash_int_type WITH EMPTY KEY.
 
-        types: begin of ty_hash_int_type,
-                    key type i,
-                    value type ref to cache_record,
-                end of ty_hash_int_type,
-                ty_hash_int_type_tab type table of ty_hash_int_type with empty key.
-
-        types: begin of ty_hash_label_type,
-                    key type string,
-                    value type ty_hash_int_type_tab,
-                end of ty_hash_label_type,
-                hash_label_type_tab type table of ty_hash_label_type with empty key.
+    TYPES: BEGIN OF ty_hash_label_type,
+                    key TYPE string,
+                    value TYPE ty_hash_int_type_tab,
+                END OF ty_hash_label_type,
+                hash_label_type_tab TYPE TABLE OF ty_hash_label_type WITH EMPTY KEY.
                 
-        data cache type hash_label_type_tab.
+    DATA cache TYPE hash_label_type_tab.
 
-        class-data regex0 type ref to cl_abap_regex.
+    CLASS-DATA regex0 TYPE REF TO cl_abap_regex.
+       
+    METHODS read_root RETURNING VALUE(result) TYPE REF TO zcl_digits_tree_node.
+    METHODS read_digits RETURNING VALUE(result) TYPE REF TO zcl_digits_tree_node.
         
-        methods read_root returning value(result) type ref to zcl_digits_tree_node.
-        methods read_digits returning value(result) type ref to zcl_digits_tree_node.
+ENDCLASS.
+
+CLASS zcl_digits_parser IMPLEMENTATION.
+  METHOD class_constructor.
+    regex0 = NEW cl_abap_regex( pattern = '/^[0-9]/' ).
         
-endclass.
+    DATA top_level TYPE string.
+  ENDMETHOD.
 
-class zcl_digits_parser implementation.
-    method class_constructor.
-        regex0 = new cl_abap_regex( pattern = '/^[0-9]/' ).
-        
-        data top_level type string.
-    endmethod.
+  METHOD constructor.
+    me->input = input.
+    input_size = strlen( input ).
+    me->actions = actions.
+    me->offset = 0.
+    me->failure = 0.
 
-    method constructor.
-        me->input = input.
-        input_size = strlen( input ).
-        me->actions = actions.
-        me->offset = 0.
-        me->failure = 0.
-
-        data test type string.
-    endmethod.
+    DATA test TYPE string.
+  ENDMETHOD.
     
-    method format_error.
-        split input at '\n' into table data(lines) in character mode.
-        data(line_no) = 1.
-        data(position) = 0.
+  METHOD format_error.
+    SPLIT input AT '\n' INTO TABLE DATA(lines) IN CHARACTER MODE.
+    DATA(line_no) = 1.
+    DATA(position) = 0.
 
-        while position <= offset.
-            position = position + strlen( lines[ line_no ] ) + 1.
-            line_no = line_no + 1.
-        endwhile.
+    WHILE position <= offset.
+      position = position + strlen( lines[ line_no ] ) + 1.
+      line_no = line_no + 1.
+    ENDWHILE.
 
-        data(line) = lines[ line_no - 1 ].
-        data(message) = 'Line ' && line_no && ': expected one of:\n\n'.
+    DATA(line) = lines[ line_no - 1 ].
+    DATA(message) = 'Line ' && line_no && ': expected one of:\n\n'.
 
-        loop at expected into data(pair).
-            message = message && |    - { pair[ 2 ] } from { pair[ 1 ] }\n|.
-        endloop.
-        data(number) = '' && line_no.
-        while strlen( number ) < 6.
-            number = ` ` && number.
-            message = message && '\n' && number && ' | ' && line && '\n'.
-        endwhile.
+    LOOP AT expected INTO DATA(pair).
+      message = message && |    - { pair[ 2 ] } from { pair[ 1 ] }\n|.
+    ENDLOOP.
+    DATA(number) = '' && line_no.
+    WHILE strlen( number ) < 6.
+      number = ` ` && number.
+      message = message && '\n' && number && ' | ' && line && '\n'.
+    ENDWHILE.
 
-        position = position - strlen( line ) + 10.
+    position = position - strlen( line ) + 10.
 
-        while position < offset.
-            message = message && ' '.
-            position = position + 1.
-        endwhile.
-        result = message && '^'.
-    endmethod.    
-    method read_root.
-        data(address0) = failure_node.
-        data(index0) = offset.
-        append value #( key = 'root' value = value #( ) ) to cache.
-        if line_exists( cache[ key = 'root' ] ).
-            data(rule) = cache[ key = 'root' ]-value.
-        endif.
-        if rule is initial.
-            append value #( key = 'root' value = rule ) to cache.
-        endif.
-        if line_exists( rule[ key = offset ] ).
-            address0 = rule[ key = offset ]-value->node.
-            offset = rule[ key = offset ]-value->tail.
-        else.
-            data(index1) = offset.
-            data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
-            clear elements0.
-            data(address1) = failure_node.
-            data chunk0 type string.
-            clear chunk0.
-            data(max0) = offset + 3.
-            if max0 <= input_size.
-                chunk0 = substring( val = input off = offset len = max0 - offset ).
-            endif.
-            if chunk0 is not initial and chunk0 = `foo`.
-                address1 = new zcl_digits_tree_node(
+    WHILE position < offset.
+      message = message && ' '.
+      position = position + 1.
+    ENDWHILE.
+    result = message && '^'.
+  ENDMETHOD.
+  METHOD read_root.
+    DATA(address0) = failure_node.
+    DATA(index0) = offset.
+    APPEND VALUE #( key = 'root' value = VALUE #( ) ) TO cache.
+    IF line_exists( cache[ key = 'root' ] ).
+      DATA(rule) = cache[ key = 'root' ]-value.
+    ENDIF.
+    IF rule IS INITIAL.
+      APPEND VALUE #( key = 'root' value = rule ) TO cache.
+    ENDIF.
+    IF line_exists( rule[ key = offset ] ).
+      address0 = rule[ key = offset ]-value->node.
+      offset = rule[ key = offset ]-value->tail.
+    ELSE.
+      DATA(index1) = offset.
+      DATA elements0 TYPE zcl_digits_tree_node=>tree_node_list_tab.
+      CLEAR elements0.
+      DATA(address1) = failure_node.
+      DATA chunk0 TYPE string.
+      CLEAR chunk0.
+      DATA(max0) = offset + 3.
+      IF max0 <= input_size.
+        chunk0 = substring( val = input off = offset len = max0 - offset ).
+      ENDIF.
+      IF chunk0 IS NOT INITIAL AND chunk0 = `foo`.
+        address1 = NEW zcl_digits_tree_node(
                     text = substring( val = input off = offset len = offset + 3 - offset )
                     offset = offset
-                    elements = value #( ) ).
-                offset = offset + 3.
-            else.
-                address1 = failure_node.
-                if offset > failure.
-                    failure = offset.
-                endif.
-                if offset = failure.
-                    append value #( ( `digits::root` ) ( `first` ) ) to expected.
-                endif.
-            endif.
-            if address1 <> failure_node.
-                append address1 to elements0.
-                data(address2) = failure_node.
-                data chunk1 type string.
-                clear chunk1.
-                data(max1) = offset + 3.
-                if max1 <= input_size.
-                    chunk1 = substring( val = input off = offset len = max1 - offset ).
-                endif.
-                if chunk1 is not initial and chunk1 = `bar`.
-                    address2 = new zcl_digits_tree_node(
+                    elements = VALUE #( ) ).
+        offset = offset + 3.
+      ELSE.
+        address1 = failure_node.
+        IF offset > failure.
+          failure = offset.
+        ENDIF.
+        IF offset = failure.
+          APPEND VALUE #( ( `digits::root` ) ( `first` ) ) TO expected.
+        ENDIF.
+      ENDIF.
+      IF address1 <> failure_node.
+        APPEND address1 TO elements0.
+        DATA(address2) = failure_node.
+        DATA chunk1 TYPE string.
+        CLEAR chunk1.
+        DATA(max1) = offset + 3.
+        IF max1 <= input_size.
+          chunk1 = substring( val = input off = offset len = max1 - offset ).
+        ENDIF.
+        IF chunk1 IS NOT INITIAL AND chunk1 = `bar`.
+          address2 = NEW zcl_digits_tree_node(
                         text = substring( val = input off = offset len = offset + 3 - offset )
                         offset = offset
-                        elements = value #( ) ).
-                    offset = offset + 3.
-                else.
-                    address2 = failure_node.
-                    if offset > failure.
-                        failure = offset.
-                    endif.
-                    if offset = failure.
-                        append value #( ( `digits::root` ) ( `second` ) ) to expected.
-                    endif.
-                endif.
-                if address2 <> failure_node.
-                    append address2 to elements0.
-                else.
-                    clear elements0.
-                    offset = index1.
-                endif.
-            else.
-                clear elements0.
-                offset = index1.
-            endif.
-            if elements0 is initial.
-                address0 = failure_node.
-            else.
-                address0 = zcl_digits_tree_node_root=>action(
+                        elements = VALUE #( ) ).
+          offset = offset + 3.
+        ELSE.
+          address2 = failure_node.
+          IF offset > failure.
+            failure = offset.
+          ENDIF.
+          IF offset = failure.
+            APPEND VALUE #( ( `digits::root` ) ( `second` ) ) TO expected.
+          ENDIF.
+        ENDIF.
+        IF address2 <> failure_node.
+          APPEND address2 TO elements0.
+        ELSE.
+          CLEAR elements0.
+          offset = index1.
+        ENDIF.
+      ELSE.
+        CLEAR elements0.
+        offset = index1.
+      ENDIF.
+      IF elements0 IS INITIAL.
+        address0 = failure_node.
+      ELSE.
+        address0 = zcl_digits_tree_node_root=>action(
                     text = substring( val = input off = index1 len = offset - index1 )
                     offset = index1
                     elements = elements0 ).
-                offset = offset.
-            endif.
-            append value #( key = index0 value = new cache_record( node = address0 tail = offset ) ) to rule.
-        endif.
-        result = address0.
-    endmethod.
+        offset = offset.
+      ENDIF.
+      APPEND VALUE #( key = index0 value = NEW cache_record( node = address0 tail = offset ) ) TO rule.
+    ENDIF.
+    result = address0.
+  ENDMETHOD.
     
-    method read_digits.
-        data(address0) = failure_node.
-        data(index0) = offset.
-        append value #( key = 'digits' value = value #( ) ) to cache.
-        if line_exists( cache[ key = 'digits' ] ).
-            data(rule) = cache[ key = 'digits' ]-value.
-        endif.
-        if rule is initial.
-            append value #( key = 'digits' value = rule ) to cache.
-        endif.
-        if line_exists( rule[ key = offset ] ).
-            address0 = rule[ key = offset ]-value->node.
-            offset = rule[ key = offset ]-value->tail.
-        else.
-            data(index1) = offset.
-            data elements0 type zcl_digits_tree_node=>tree_node_list_tab.
-            clear elements0.
-            data address1 type ref to zcl_digits_tree_node.
-            clear address1.
-            do.
-                data chunk0 type string.
-                clear chunk0.
-                data(max0) = offset + 1.
-                if max0 <= input_size.
-                    chunk0 = substring( val = input off = offset len = max0 - offset ).
-                endif.
-                if chunk0 is not initial and regex0->create_matcher( text = chunk0 )->match( ) = abap_true.
-                    address1 = new zcl_digits_tree_node(
+  METHOD read_digits.
+    DATA(address0) = failure_node.
+    DATA(index0) = offset.
+    APPEND VALUE #( key = 'digits' value = VALUE #( ) ) TO cache.
+    IF line_exists( cache[ key = 'digits' ] ).
+      DATA(rule) = cache[ key = 'digits' ]-value.
+    ENDIF.
+    IF rule IS INITIAL.
+      APPEND VALUE #( key = 'digits' value = rule ) TO cache.
+    ENDIF.
+    IF line_exists( rule[ key = offset ] ).
+      address0 = rule[ key = offset ]-value->node.
+      offset = rule[ key = offset ]-value->tail.
+    ELSE.
+      DATA(index1) = offset.
+      DATA elements0 TYPE zcl_digits_tree_node=>tree_node_list_tab.
+      CLEAR elements0.
+      DATA address1 TYPE REF TO zcl_digits_tree_node.
+      CLEAR address1.
+      DO.
+        DATA chunk0 TYPE string.
+        CLEAR chunk0.
+        DATA(max0) = offset + 1.
+        IF max0 <= input_size.
+          chunk0 = substring( val = input off = offset len = max0 - offset ).
+        ENDIF.
+        IF chunk0 IS NOT INITIAL AND regex0->create_matcher( text = chunk0 )->match( ) = abap_true.
+          address1 = NEW zcl_digits_tree_node(
                         text = substring( val = input off = offset len = offset + 1 - offset )
                         offset = offset
-                        elements = value #( ) ).
-                    offset = offset + 1.
-                else.
-                    address1 = failure_node.
-                    if offset > failure.
-                        failure = offset.
-                    endif.
-                    if offset = failure.
-                        append value #( ( `digits::digits` ) ( `regex0` ) ) to expected.
-                    endif.
-                endif.
-                if address1 <> failure_node.
-                    append address1 to elements0.
-                else.
-                    exit.
-                endif.
-            enddo.
-            if lines( elements0 ) >= 0.
-                address0 = new zcl_digits_tree_node(
+                        elements = VALUE #( ) ).
+          offset = offset + 1.
+        ELSE.
+          address1 = failure_node.
+          IF offset > failure.
+            failure = offset.
+          ENDIF.
+          IF offset = failure.
+            APPEND VALUE #( ( `digits::digits` ) ( `regex0` ) ) TO expected.
+          ENDIF.
+        ENDIF.
+        IF address1 <> failure_node.
+          APPEND address1 TO elements0.
+        ELSE.
+          EXIT.
+        ENDIF.
+      ENDDO.
+      IF lines( elements0 ) >= 0.
+        address0 = NEW zcl_digits_tree_node(
                     text = substring( val = input off = index1 len = offset - index1 )
                     offset = index1
                     elements = elements0 ).
-                offset = offset.
-            else.
-                address0 = failure_node.
-            endif.
-            append value #( key = index0 value = new cache_record( node = address0 tail = offset ) ) to rule.
-        endif.
-        result = address0.
-    endmethod.
+        offset = offset.
+      ELSE.
+        address0 = failure_node.
+      ENDIF.
+      APPEND VALUE #( key = index0 value = NEW cache_record( node = address0 tail = offset ) ) TO rule.
+    ENDIF.
+    result = address0.
+  ENDMETHOD.
     
     
 
-  method parse.
-    data(parser) = new zcl_digits_parser( input = input actions = actions ).
+  METHOD parse.
+    DATA(parser) = NEW zcl_digits_parser( input = input actions = actions ).
     result = parser->parse3( ).
-  endmethod.
+  ENDMETHOD.
 
-  method parse2.
+  METHOD parse2.
     result = parse( input = input ).
-  endmethod.
+  ENDMETHOD.
 
-  method parse3.
-    data(tree) = read_root( ).
-    if tree <> failure_node and offset = input_size.
+  METHOD parse3.
+    DATA(tree) = read_root( ).
+    IF tree <> failure_node AND offset = input_size.
       result = tree.
-      return.
-    endif.
-    if expected is initial.
+      RETURN.
+    ENDIF.
+    IF expected IS INITIAL.
       failure = offset.
-      append value stringtab( ( `digits` ) ( `<EOF>` ) ) to expected.
-    endif.
-    raise exception type zcx_digits_parser_error
-        exporting message = format_error( input = input offset = failure expected = expected ).
-  endmethod.
+      APPEND VALUE stringtab( ( `digits` ) ( `<EOF>` ) ) TO expected.
+    ENDIF.
+    RAISE EXCEPTION TYPE zcx_digits_parser_error
+        EXPORTING message = format_error( input = input offset = failure expected = expected ).
+  ENDMETHOD.
 
-endclass.
+ENDCLASS.
